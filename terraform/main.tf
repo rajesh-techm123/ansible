@@ -33,13 +33,13 @@ resource "azurerm_network_interface" "example-nic" {
   }
 }
 
-data "azurerm_virtual_machine" "example-vm" {
+/*data "azurerm_virtual_machine" "example-vm" {
   name                = "aibtestvm"
   resource_group_name = data.azurerm_resource_group.example.name
-}
+}*/
 
 resource "azurerm_windows_virtual_machine" "example-vm" {
-  name                = "packervmtest"
+  name                = "terraformvmtest"
   resource_group_name = data.azurerm_resource_group.example.name
   location            = data.azurerm_resource_group.example.location
   size                = "Standard_D2s_v3"

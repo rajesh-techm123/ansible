@@ -13,12 +13,12 @@ terraform {
     }
  }
 
-backend "azurerm" {
+/*backend "azurerm" {
      key = "terraformansible.tfstate"
      resource_group_name  = "Test_VM"
      storage_account_name = "tfstatewells"
      container_name       = "ansible"
      use_oidc = true    
      #use_azuread_auth = true
-  }
+  }*/
 }
