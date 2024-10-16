@@ -8,7 +8,7 @@ on:
 jobs:
  terraform:
     name: Deploy VM using SIG
-    runs-on: [Linux] #[self-hosted,test]
+    runs-on: [ubuntu-latest] #[self-hosted,test]
     defaults:
         run:
             shell: bash
