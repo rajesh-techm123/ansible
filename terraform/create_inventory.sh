@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the private IP from Terraform output
-echo " Hello world" > inventory.ini
+echo " Hello world" > ./ansiblepoc/inventory.ini
 vm_private_ip=$(terraform output  vm_private_ip)
 echo "Private IP fetched: $vm_private_ip"
 # Check if PRIVATE_IP is not empty
