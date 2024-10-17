@@ -87,7 +87,7 @@ jobs:
 
         
       - name: Generate Ansible Inventory
-        shell: echo "Hello, World!" > ../ansible/inventory.ini
+        shell: echo "Hello, World!" >> ../ansible/inventory.ini
         run: echo "windows" > ansible/inventory.ini
              echo "my_windows_vm ansible_user=azureuser  ansible_connection=winrm" >> ansible/inventory.ini
              echo "Dynamic inventory created:"
