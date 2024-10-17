@@ -105,6 +105,6 @@ jobs:
       - name: Run Ansible Playbook
         working-directory: '${{github.workspace}}/ansiblepoc'
         run: |
-              ansible-playbook -i inventory.ini service.yml
+         ansible-playbook -i inventory.ini services.yml
 
     
