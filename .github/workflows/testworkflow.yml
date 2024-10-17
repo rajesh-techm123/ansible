@@ -58,7 +58,7 @@ jobs:
 
       - name: Terraform plan
         
-        working-directory: '${{github.workspace}}/terraform-poc' 
+        working-directory: '${{github.workspace}}/terraform' 
         run: 
          terraform plan -no-color
         env:
@@ -73,7 +73,7 @@ jobs:
        # Run Terraform apply
       - name: Terraform Apply
         
-        working-directory: '${{github.workspace}}/terraform-poc'
+        working-directory: '${{github.workspace}}/terraform'
         run: 
          terraform apply -auto-approve
         env:
@@ -87,7 +87,7 @@ jobs:
         
       - name: Generate Ansible Inventory
         run: ./create_inventory.sh
-        working-directory: '${{github.workspace}}/terraform-poc'
+        working-directory: '${{github.workspace}}/terraform'
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -103,7 +103,7 @@ jobs:
 
   
       - name: Run Ansible Playbook
-        working-directory: '${{github.workspace}}/ansible'
+        working-directory: '${{github.workspace}}/ansiblepoc'
         run: |
           ansible-playbook -i inventory.ini setup_vm.yml
           ansible-playbook -i inventory.ini service.yml
