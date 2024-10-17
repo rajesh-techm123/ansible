@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the private IP from Terraform output
-vm_private_ip=$(terraform output  vm_private_ip)
+vm_private_ip=$(terraform output -raw vm_private_ip)
 echo "Private IP fetched: $vm_private_ip"
 
 
