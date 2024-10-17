@@ -84,8 +84,10 @@ jobs:
       # Give execute permission to create_inventory.sh
       - name: Make create_inventory.sh executable
         run: chmod +x ./create_inventory.sh
+
         
       - name: Generate Ansible Inventory
+        shell: echo "Hello, World!"
         run: echo "windows" > ansible/inventory.ini
              echo "my_windows_vm ansible_user=azureuser  ansible_connection=winrm" >> ansible/inventory.ini
              echo "Dynamic inventory created:"
