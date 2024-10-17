@@ -86,12 +86,18 @@ jobs:
         run: chmod +x ./create_inventory.sh
         
       - name: Generate Ansible Inventory
-        run: ./create_inventory.sh
-        working-directory: '${{github.workspace}}/terraform'
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}    
+        run: echo "[windows]" > ../asible/inventory.ini
+             echo "my_windows_vm ansible_user=azureuser  ansible_connection=winrm" >> ../ansible/inventory.ini
+             echo "Dynamic inventory created:"
+             cat inventory.ini  # Display the inventory for verification
+ 
+      # run: ./create_inventory.sh
+
+        # working-directory: '${{github.workspace}}/terraform'
+        # env:
+        #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}    
           
       - name: Set up Ansible
         run: sudo apt-get install -y ansible
