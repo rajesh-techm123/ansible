@@ -20,7 +20,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    # needs: packer
+    # needs: packer.
         
     steps:
       - name: Checkout code
