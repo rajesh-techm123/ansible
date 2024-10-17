@@ -86,8 +86,8 @@ jobs:
         run: chmod +x ./create_inventory.sh
         
       - name: Generate Ansible Inventory
-        run: echo "windows" > ../ansible/inventory.ini
-             echo "my_windows_vm ansible_user=azureuser  ansible_connection=winrm" >> ../ansible/inventory.ini
+        run: echo "windows" > ./ansible/inventory.ini
+             echo "my_windows_vm ansible_user=azureuser  ansible_connection=winrm" >> ./ansible/inventory.ini
              echo "Dynamic inventory created:"
              cat inventory.ini  # Display the inventory for verification
  
