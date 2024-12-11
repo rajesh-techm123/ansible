@@ -1,0 +1,28 @@
+#create a log file in the unix machine
+---
+- name: Ensure Windows service is running
+  hosts: windows
+  tasks:
+    - name: Check if the service is running
+      win_service:
+        name: 'W3SVC'
+      register: service_status
+
+    - name: Debug service status
+      debug:
+        var: service_status
+
+    - name: Start the service if it is not running
+      win_service:
+        name: 'W3SVC'
+        state: started
+      when: service_status.state == 'running'
+      register: service_log
+
+    - name: Log service status
+      local_action:
+        module: lineinfile
+        path: /home/Redhat/status.log
+        line: " {{ ansible_date_time.iso8601 }} IIS service  is {{ service_log.state }}"
+        insertafter: '^.*$'
+      

@@ -1,0 +1,31 @@
+#create a log file in the windows machine
+---
+- name: Ensure Windows service is running
+  hosts: windows
+  tasks:
+    - name: Check if the service is running
+      win_service:
+        name: 'W3SVC'
+      register: service_status
+
+    - name: Debug service status
+      debug:
+        var: service_status
+
+    - name: Start the service if it is not running
+      win_service:
+        name: 'W3SVC'
+        state: started
+      when: service_status.state != 'running'
+
+    - name: Create a log file entry if the service was started
+      win_lineinfile:
+        path: 'C:\ansiblelogs\logfile.txt'
+        line: 'Service YourServiceName was running.'
+      when: service_status.state == 'running'
+
+    - name: Log entry if the service was stopped
+      win_lineinfile:
+        path: 'C:\ansiblelogs\logfile.txt'
+        line: 'Service YourServiceName was stopped.'
+      when: service_status.state == 'stopped'
