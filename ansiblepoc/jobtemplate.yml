@@ -1,0 +1,32 @@
+---
+tower_job_templates:
+  - name: "Log Processing Job"
+    playbook: "log.yaml"    
+    inventory: "inventory.yaml"
+    description: "This job processes log files"
+    extra_vars:      
+    limit: "all" 
+    job_type: "run"
+    custom_virtualenv: "/apps/ansible_venv"
+    survey_enabled: true
+    permissions: private
+    job_tags: "tag5,tag6"
+    skip_tags: "tag3,tag4"
+    verbosity: 3
+    tags: "tag1,tag2"
+    allow_simultaneous: true
+    ask_diff_mode_on_launch: false
+    credential:
+      - name: "Example Machine Credential"
+        type: "machine"
+      - name: "Example Ansible Vault Credential"
+        type: "vault"
+    survey:
+      - question_name: "log_file_path"
+        question_description: "Enter the path of the log file"
+        required: true
+        type: "text"
+        min: 1
+        max: 100
+        default: "/var/log/messages"
+        new_question: true
