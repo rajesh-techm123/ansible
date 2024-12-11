@@ -1,4 +1,4 @@
-#create a log file in the windows machine
+#create a log file in the windows machine..
 ---
 - name: Ensure Windows service is running
   hosts: windows

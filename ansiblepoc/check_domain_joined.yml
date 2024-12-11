@@ -1,0 +1,21 @@
+---
+- name: Check if the Windows VM is domain joined
+  hosts: windows_vms
+  gather_facts: no  # Skip gathering facts to optimize the run
+
+  tasks:
+    - name: Get domain information
+      win_domain:
+        name: "{{ domain_name }}"  # Specify the domain name if needed (optional)
+      register: domain_info
+      ignore_errors: yes  # Continue if the machine is not domain-joined
+
+    - name: Check if domain joined
+      debug:
+        msg: "The Windows machine is domain-joined to {{ domain_info.domain }}."
+      when: domain_info is defined and domain_info.domain != ""
+
+    - name: Check if the machine is not domain-joined
+      debug:
+        msg: "The Windows machine is not domain-joined."
+      when: domain_info is not defined or domain_info.domain == ""
