@@ -1,1 +1,3 @@
 
+pip install pywinrm
+python -m winrm --username your_username --password your_password --transport ntlm --server-cert-validation ignore http://windows_server_ip:5985/wsman
