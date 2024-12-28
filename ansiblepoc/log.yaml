@@ -16,7 +16,7 @@
       win_service:
         name: 'W3SVC'
         state: started
-      when: service_status.state == 'running'
+      when: service_status.state != 'running'
       register: service_log
 
     - name: Log service status

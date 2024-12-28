@@ -1,0 +1,51 @@
+ok: [10.0.2.5] => {
+    "service_status.results": [
+        {
+            "ansible_loop_var": "item",
+            "can_pause_and_continue": false,
+            "changed": false,
+            "depended_by": [],
+            "dependencies": [
+                "WAS",
+                "HTTP"
+            ],
+            "description": "Provides Web connectivity and administration through the Internet Information Services Manager",
+            "desktop_interact": false,
+            "display_name": "World Wide Web Publishing Service",
+            "exists": true,
+            "failed": false,
+            "invocation": {
+                "module_args": {
+                    "dependencies": null,
+                    "dependency_action": "set",
+                    "description": null,
+                    "desktop_interact": false,
+                    "display_name": null,
+                    "error_control": null,
+                    "failure_actions": null,
+                    "failure_actions_on_non_crash_failure": null,
+                    "failure_command": null,
+                    "failure_reboot_msg": null,
+                    "failure_reset_period_sec": null,
+                    "force_dependent_services": false,
+                    "load_order_group": null,
+                    "name": "W3SVC",
+                    "password": null,
+                    "path": null,
+                    "pre_shutdown_timeout_ms": null,
+                    "required_privileges": null,
+                    "service_type": null,
+                    "sid_info": null,
+                    "start_mode": null,
+                    "state": null,
+                    "update_password": null,
+                    "username": null
+                }
+            },
+            "item": "W3SVC",
+            "name": "W3SVC",
+            "path": "C:\\Windows\\system32\\svchost.exe -k iissvcs",
+            "start_mode": "auto",
+            "state": "running",
+            "username": "LocalSystem"
+        },

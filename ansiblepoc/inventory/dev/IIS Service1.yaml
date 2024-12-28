@@ -1,0 +1,36 @@
+# File2
+---
+- name: Ensure Windows service is running
+  hosts: windows
+  tasks:
+    - name: Check if the service is running
+      ansible.windows.win_service:
+        name: 'W3SVC'
+      register: service_status
+
+    - name: Debug service status
+      ansible.builtin.debug:
+        var: service_status
+
+    - name: Start the service if it is not running
+      ansible.windows.win_service:
+        name: 'W3SVC'
+        state: started
+      when: service_status.state != 'running'
+      register: service_log
+
+    - name: Log service status when already running on localhost
+      ansible.builtin.lineinfile:
+        path: /home/Redhat/Log/iis.log
+        line: "{{ ansible_date_time.iso8601 }} IIS service is already running"
+        insertafter: '^.*$'
+      delegate_to: localhost
+      when: service_status.state == 'running'
+
+    - name: Log service status when already running on localhost
+      ansible.builtin.lineinfile:
+        path: /home/Redhat/Log/iis.log
+        line: "{{ ansible_date_time.iso8601 }} IIS service is {{service_status.state}}"
+        insertafter: '^.*$'
+        delegate_to: localhost
+      when: service_status.state != 'running'

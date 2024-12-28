@@ -1,0 +1,37 @@
+---
+- name: Copy content of log.txt from Windows to Linux
+  hosts: windows
+  tasks:
+    - name: Read the content of log.txt
+      ansible.builtin.win_shell: |
+        Get-Content C:\ansiblelogs\logfile.txt
+      register: log_content
+
+    - name: Debug service status
+      ansible.builtin.debug:
+        var: log_content
+
+    - name: Show stdout_lines
+      ansible.builtin.debug:
+        msg: "{{ log_content.stdout_lines }}"
+      
+    - name: Create a directory on localhost
+      ansible.builtin.file:
+        path: /home/Redhat/Log
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+    - name: Create a file inside the directory on localhost
+      ansible.builtin.file:
+        path: /home/Redhat/Log/iis.log
+        state: touch
+        mode: '0644'
+      delegate_to: localhost
+
+    - name: Log service status when already running on localhost
+      ansible.builtin.lineinfile:
+        path: /home/Redhat/Log/iis.log
+        line: "{{ ansible_date_time.iso8601 }} IIS service is already running {{ log_content.stdout_lines | join('\n') }}"
+      delegate_to: localhost
+      
