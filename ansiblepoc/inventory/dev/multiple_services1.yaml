@@ -1,12 +1,11 @@
-
 ---
 - name: Ensure Windows services are running and copy log content
   hosts: windows
   tasks:
-    - name: Define services to check
+    - name: Define services to check.
       set_fact:
         services:
-          - W3SVC
+          - BTAGService
           - Appinfo
 
     - name: Check if the services are running
@@ -17,9 +16,22 @@
       loop_control:
         label: "{{ item }}"
 
-    - name: Debug service status
-      ansible.builtin.debug:
-        var: service_status.results
+    - name: Create a directory on localhost
+      ansible.builtin.file:
+        path: /home/Redhat/Log
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+    - name: Create a file for each service inside the directory on localhost
+      ansible.builtin.file:
+        path: "/home/Redhat/Log/{{ item.item }}.log"
+        state: touch
+        mode: '0644'
+      loop: "{{ service_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+      delegate_to: localhost
 
     - name: Start the services if they are not running
       ansible.windows.win_service:
@@ -31,16 +43,10 @@
       loop_control:
         label: "{{ item.item }}"
 
-    - name: Check services not running
-      debug:
-        msg: "{{ item.name }} is not running"
-      when: item.state == 'running'
-      loop: "{{ service_status.results }}"
-
-    - name: Log service status when already running
+    - name: Log service status when already running to individual files
       ansible.builtin.lineinfile:
-        path: /home/Redhat/status.log
-        line: "{{ ansible_date_time.iso8601 }} {{ item.name }} service is already running"
+        path: "/home/Redhat/Log/{{ item.item }}.log"
+        line: "{{ ansible_date_time.iso8601 }} {{ item.item }} service is already running"
         insertafter: '^.*$'
       when: item.state == 'running'
       loop: "{{ service_status.results }}"
@@ -48,66 +54,13 @@
         label: "{{ item.item }}"
       delegate_to: localhost
 
-    - name: Log service status when started
+    - name: Log service status when started to individual files
       ansible.builtin.lineinfile:
-        path: /home/Redhat/status.log
-        line: "{{ ansible_date_time.iso8601 }} {{ item.name }} service started now"
+        path: "/home/Redhat/Log/{{ item.item }}.log"
+        line: "{{ ansible_date_time.iso8601 }} {{ item.item }} service started now"
         insertafter: '^.*$'
       when: item.state != 'running'
       loop: "{{ service_status.results }}"
       loop_control:
-        label: "{{ item.item }}"
+          label: "{{ item.item }}"
       delegate_to: localhost
-
-    - name: Read the content of log.txt
-      ansible.windows.win_shell: |
-        Get-Content C:\ansiblelogs\logfile.txt
-      register: log_content
-
-    - name: Debug log content
-      ansible.builtin.debug:
-        var: log_content
-
-    - name: Show stdout_lines
-      ansible.builtin.debug:
-        msg: "{{ log_content.stdout_lines }}"
-
-    - name: Create a directory on localhost
-      ansible.builtin.file:
-        path: /home/Redhat/Log
-        state: directory
-        mode: '0755'
-      delegate_to: localhost
-
-    - name: Create a file inside the directory on localhost
-      ansible.builtin.file:
-        path: /home/Redhat/Log/iis.log
-        state: touch
-        mode: '0644'
-      delegate_to: localhost
-
-    - name: Create a file for each service inside the directory on localhost
-      ansible.builtin.file:
-        path: "/home/Redhat/Log/{{ item.item }}.log"
-        state: touch
-        mode: '0644'
-        delegate_to: localhost
-        loop: "{{ service_status.results }}"
-        loop_control:
-        label: "{{ item.item }}"
-
-    - name: Log service status when already running on localhost
-      ansible.builtin.lineinfile:
-        path: /home/Redhat/Log/iis.log
-        line: "{{ ansible_date_time.iso8601 }} IIS service is already running {{ log_content.stdout_lines | join('\n') }}"
-      delegate_to: localhost
-
-    - name: Create a file for each service on localhost
-      ansible.builtin.file:
-        path: "/home/Redhat/Log/{{ item.item }}.log"
-        state: touch
-        mode: '0644'
-        delegate_to: localhost
-        loop: "{{ service_status.results }}"
-        loop_control:
-        label: "{{ item.item }}"
