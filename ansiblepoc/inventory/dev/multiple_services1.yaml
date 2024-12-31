@@ -86,8 +86,28 @@
         mode: '0644'
       delegate_to: localhost
 
+    - name: Create a file for each service inside the directory on localhost
+      ansible.builtin.file:
+        path: "/home/Redhat/Log/{{ item.item }}.log"
+        state: touch
+        mode: '0644'
+        delegate_to: localhost
+        loop: "{{ service_status.results }}"
+        loop_control:
+        label: "{{ item.item }}"
+
     - name: Log service status when already running on localhost
       ansible.builtin.lineinfile:
         path: /home/Redhat/Log/iis.log
         line: "{{ ansible_date_time.iso8601 }} IIS service is already running {{ log_content.stdout_lines | join('\n') }}"
       delegate_to: localhost
+
+    - name: Create a file for each service on localhost
+      ansible.builtin.file:
+        path: "/home/Redhat/Log/{{ item.item }}.log"
+        state: touch
+        mode: '0644'
+        delegate_to: localhost
+        loop: "{{ service_status.results }}"
+        loop_control:
+        label: "{{ item.item }}"
