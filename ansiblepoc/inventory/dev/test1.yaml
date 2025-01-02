@@ -1,0 +1,48 @@
+---
+- name: Read content of all files in a directory on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Find all files in the directory
+      win_find:
+        paths: "C:\\path\\to\\your\\folder"  # Specify the directory path
+        recurse: yes
+        patterns: "*.txt"  # Adjust pattern if necessary (e.g., for *.txt, *.log, etc.)
+      register: files_found
+
+    - name: Read content of each file
+      win_command: powershell -Command "Get-Content -Path '{{ item.path }}' | Out-String"
+      loop: "{{ files_found.files }}"
+      register: file_contents
+
+    - name: Display file contents
+      debug:
+        msg: "{{ item.stdout }}"
+      loop: "{{ file_contents.results }}"
+      when: item.stdout != ""
+
+    - name: Create a directory and log service status on localhost (Linux side)
+      ansible.builtin.file:
+        path: "/home/Redhat/Log"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+    - name: Define list of log files (assuming you want to create files based on previous content)
+      set_fact:
+        log_files: "{{ files_found.files | map(attribute='path') | list }}"
+
+    - name: Create a file inside the directory on localhost
+      ansible.builtin.file:
+        path: "/home/Redhat/Log/{{ item | basename }}"
+        state: touch
+        mode: '0644'
+      loop: "{{ log_files }}"
+      delegate_to: localhost
+
+    - name: Log service status when already running on localhost
+      ansible.builtin.lineinfile:
+        path: "/home/Redhat/Log/{{ item.item | basename }}"
+        line: "{{ ansible_date_time.iso8601 }} {{ item.stdout_lines | join('\n') }}"
+      loop: "{{ file_contents.results }}"
+      delegate_to: localhost
