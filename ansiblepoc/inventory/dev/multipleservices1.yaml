@@ -1,0 +1,70 @@
+---
+- name: Ensure Windows services are running
+  hosts: windows
+  tasks:
+    - name: Define services to check
+      set_fact:
+        services:
+          - W3SVC
+          - Appinfo
+
+    - name: Check if the services are running
+      ansible.windows.win_service:
+        name: "{{ item }}"
+      register: service_status
+      loop: "{{ services }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Debug service status
+      ansible.builtin.debug:
+        var: service_status.results"
+
+    - name: Ensure service is set to Automatic and check if service is not running
+      ansible.windows.win_service:
+        name: "{{ item }}"
+        start_mode: auto
+      loop: "{{ services }}"
+      when: >
+        "'{{ item }}' in ansible_facts.services" and
+        ansible_facts.services[item].start_mode != 'auto' and
+        ansible_facts.services[item].state != 'running'
+        
+
+    - name: Start the services if they are not running
+      ansible.windows.win_service:
+        name: "{{ item.item }}"
+        state: started
+      when: item.state != 'running'
+      register: service_log
+      loop: "{{ service_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Check services not running
+      debug:
+        msg: "{{ item.name }} is not running"
+      when: item.state == 'running'
+      loop: "{{ service_status.results }}"
+
+    - name: Log service status when already running
+      ansible.builtin.lineinfile:
+        path: /home/Redhat/status.log
+        line: "{{ ansible_date_time.iso8601 }} {{ item.name }} service is already running"
+        insertafter: '^.*$'
+      when: item.state == 'running'
+      loop: "{{ service_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+      delegate_to: localhost
+
+    - name: Log service status when started
+      ansible.builtin.lineinfile:
+        path: /home/Redhat/status.log
+        line: "{{ ansible_date_time.iso8601 }} {{ item.name }} service started noew"
+        insertafter: '^.*$'
+      when: item.state != 'running'
+      loop: "{{ service_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+      delegate_to: localhost
