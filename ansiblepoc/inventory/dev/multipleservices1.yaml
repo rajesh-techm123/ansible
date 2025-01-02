@@ -20,16 +20,14 @@
       ansible.builtin.debug:
         var: service_status.results"
 
-    - name: Ensure service is set to Automatic and check if service is not running
+    # check whether the windows service startuptype is auto
+    - name: Check if the services are set to auto start
       ansible.windows.win_service:
         name: "{{ item }}"
-        start_mode: auto
+      register: service_status
       loop: "{{ services }}"
-      when: >
-        "'{{ item }}' in ansible_facts.services" and
-        ansible_facts.services[item].start_mode != 'auto' and
-        ansible_facts.services[item].state != 'running'
-        
+      loop_control:
+        label: "{{ item }}"    
 
     - name: Start the services if they are not running
       ansible.windows.win_service:
